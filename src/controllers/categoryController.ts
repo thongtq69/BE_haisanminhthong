@@ -185,9 +185,11 @@ export const updateCategory = async (req: Request, res: Response) => {
       }
 
       // If no cover image but have gallery, pick the first one as cover
-      if (!category.image && category.images.length > 0) {
+      if (!category.image && category.images && category.images.length > 0) {
         category.image = category.images[0];
       }
+    } else if (!category.images) {
+      category.images = [];
     }
 
     await category.save();
