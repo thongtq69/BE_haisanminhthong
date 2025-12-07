@@ -26,12 +26,22 @@ backend/
 npm install
 ```
 
-2. Tạo file `.env` (hoặc copy từ `.env.example`):
+2. Tạo file `.env` (copy từ `.env.example`):
+```bash
+cp .env.example .env
+```
+
+File `.env` cần có:
 ```env
+NODE_ENV=development
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/seafood_crab_shop
-FRONTEND_URL=http://localhost:5173
 ```
+
+**Lưu ý:** CORS đã được cấu hình tự động cho:
+- `http://localhost:3000`
+- `http://localhost:5173`
+- `https://haisanminhthong.vercel.app`
 
 3. Đảm bảo MongoDB đang chạy:
 ```bash
@@ -81,8 +91,21 @@ Server sẽ chạy tại: `http://localhost:5000`
 
 - `npm run dev` - Chạy development server với hot reload
 - `npm run build` - Build TypeScript sang JavaScript
-- `npm run start` - Chạy production server
+- `npm run start` - Chạy production server (sau khi build)
 - `npm run seed` - Seed dữ liệu mẫu vào database
+
+## Deploy lên Render
+
+1. **Connect repository** trên Render Dashboard
+2. **Set Environment Variables:**
+   ```
+   NODE_ENV=production
+   PORT=10000 (hoặc port mà Render cung cấp)
+   MONGODB_URI=<your_mongodb_atlas_connection_string>
+   ```
+3. **Build Command:** `npm run build`
+4. **Start Command:** `npm run start`
+5. **Backend URL:** `https://be-haisanminhthong.onrender.com`
 
 ## Models
 
