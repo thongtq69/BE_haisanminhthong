@@ -7,6 +7,10 @@ import { config } from './env';
  */
 const sanitizeMongoUri = (uri: string): string => {
   try {
+    if (!uri) return '';
+    if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
+      return '';
+    }
     const url = new URL(uri);
     const paramsToDedup = ['w', 'appName'];
 
@@ -36,6 +40,9 @@ const sanitizeMongoUri = (uri: string): string => {
 export const connectDB = async (): Promise<void> => {
   try {
     const uri = sanitizeMongoUri(config.mongodbUri);
+    if (!uri) {
+      throw new Error('Missing or invalid MONGODB_URI (must start with mongodb:// or mongodb+srv://)');
+    }
     await mongoose.connect(uri);
     console.log('✅ MongoDB connected successfully');
   } catch (error) {
