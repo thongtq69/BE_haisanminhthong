@@ -2,17 +2,31 @@ import mongoose from 'mongoose';
 import { config } from './env';
 
 /**
- * Sanitize connection string to avoid duplicate query params (e.g. `w` twice)
+ * Sanitize connection string to avoid duplicate query params (e.g. `w`, `appName`).
+ * Keeps only the first value for each param.
  */
 const sanitizeMongoUri = (uri: string): string => {
   try {
     const url = new URL(uri);
-    // Keep only the first value for "w" to avoid MongoInvalidArgumentError
-    const wValues = url.searchParams.getAll('w');
-    if (wValues.length > 1) {
-      url.searchParams.delete('w');
-      url.searchParams.append('w', wValues[0]);
+    const paramsToDedup = ['w', 'appName'];
+
+    paramsToDedup.forEach((key) => {
+      const values = url.searchParams.getAll(key);
+      if (values.length > 1) {
+        url.searchParams.delete(key);
+        url.searchParams.append(key, values[0]);
+      }
+    });
+
+    // Generic dedup: if any other param appears multiple times, keep first.
+    for (const [key] of url.searchParams) {
+      const values = url.searchParams.getAll(key);
+      if (values.length > 1) {
+        url.searchParams.delete(key);
+        url.searchParams.append(key, values[0]);
+      }
     }
+
     return url.toString();
   } catch {
     return uri;
