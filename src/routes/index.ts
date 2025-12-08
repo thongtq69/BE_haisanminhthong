@@ -6,6 +6,7 @@ import blogRoutes from './blogRoutes';
 import reviewRoutes from './reviewRoutes';
 import orderRoutes from './orderRoutes';
 import adminBlogRoutes from './adminBlogRoutes';
+import uploadRoutes from './uploadRoutes';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/combos', comboRoutes);
 router.use('/blog', blogRoutes);
 router.use('/orders', orderRoutes);
 router.use('/admin/blog', adminBlogRoutes);
+router.use('/admin/uploads', uploadRoutes);
 
 export default router;

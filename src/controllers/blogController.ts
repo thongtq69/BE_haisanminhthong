@@ -24,16 +24,16 @@ const buildFilters = (query: any, includeDraft = false) => {
 
 export const getPosts = async (req: Request, res: Response) => {
   try {
-    const { limit = 10, page = 1 } = req.query;
-    const paginationLimit = Number(limit);
-    const currentPage = Number(page);
-    const skip = (currentPage - 1) * paginationLimit;
-    const filters = buildFilters(req.query);
+  const { limit = 10, page = 1 } = req.query;
+  const paginationLimit = Number(limit);
+  const currentPage = Number(page);
+  const skip = (currentPage - 1) * paginationLimit;
+  const filters = buildFilters(req.query);
 
-    const [items, total] = await Promise.all([
-      BlogPost.find(filters).sort({ publishedAt: -1, createdAt: -1 }).skip(skip).limit(paginationLimit),
-      BlogPost.countDocuments(filters),
-    ]);
+  const [items, total] = await Promise.all([
+    BlogPost.find(filters).sort({ publishedAt: -1, createdAt: -1 }).skip(skip).limit(paginationLimit),
+    BlogPost.countDocuments(filters),
+  ]);
 
     return res.json({
       items,
@@ -109,9 +109,13 @@ export const adminCreatePost = async (req: Request, res: Response) => {
     }
 
     const finalSlug = await generateUniqueSlug(title, slug);
+    const shortDescription = (req.body as any).shortDescription || req.body.excerpt || '';
     const payload = {
       ...req.body,
       slug: finalSlug,
+      shortDescription,
+      seoTitle: req.body.seoTitle || title,
+      seoDescription: req.body.seoDescription || shortDescription,
       publishedAt: req.body.status === 'published' && !req.body.publishedAt ? new Date() : req.body.publishedAt,
     };
 
@@ -133,9 +137,13 @@ export const adminUpdatePost = async (req: Request, res: Response) => {
     }
 
     const finalSlug = await generateUniqueSlug(title, slug, existing._id.toString());
+    const shortDescription = (req.body as any).shortDescription || req.body.excerpt || existing.shortDescription || '';
     const payload = {
       ...req.body,
       slug: finalSlug,
+      shortDescription,
+      seoTitle: req.body.seoTitle || title,
+      seoDescription: req.body.seoDescription || shortDescription,
       publishedAt:
         req.body.status === 'published' && !req.body.publishedAt ? existing.publishedAt || new Date() : req.body.publishedAt,
     };

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { allowedOrigins } from './config/env';
 import apiRouter from './routes';
+import path from 'path';
 
 const app = express();
 
@@ -18,6 +19,10 @@ app.use(
     credentials: true,
   })
 );
+
+// Serve uploads statically
+const uploadsPath = path.join(process.cwd(), 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // API Routes
 app.use('/api', apiRouter);
